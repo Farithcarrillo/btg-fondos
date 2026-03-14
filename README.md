@@ -189,3 +189,29 @@ src/app/
 - Se asume un usuario único con saldo inicial de COP $500.000
 - Los datos persisten en `localStorage` del navegador
 - Para resetear los datos: DevTools → Application → Local Storage → eliminar `btg_fondos_state`
+
+---
+
+## Capturas de Pantalla
+
+### Dashboard — Estado inicial
+Vista principal, resumen de inversiones y acceso rápido a fondos y transacciones.
+
+![Dashboard inicial](screenshots/01.png)
+
+### Fondos Disponibles
+Listado de los 5 fondos FPV y FIC con filtrado por categoría, monto mínimo y botón de suscripción.
+
+![Fondos disponibles](screenshots/02.png)
+
+### Mis Fondos Activos — Sin suscripciones
+Resumen de inversión y acceso directo para explorar fondos.
+
+![Mis fondos vacío](screenshots/04.png)
+
+### Historial de Transacciones
+Tabla con ID de transacción, fondo, tipo, monto, método de notificación (con destino) y fecha.
+
+![Historial de transacciones](screenshots/05.png)
+
+---
