@@ -19,7 +19,8 @@
     "module": "ES2022",
     "lib": [
       "ES2022",
-      "dom"
+      "dom",
+      "ESNext.Disposable"
     ],
     "paths": {
       "@core/*": [

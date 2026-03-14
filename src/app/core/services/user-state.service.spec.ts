@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { UserStateService } from './user-state.service';
 import { Fund } from '@core/models';
+import { ApplicationRef } from '@angular/core';
 
 describe('UserStateService', () => {
     let service: UserStateService;
@@ -115,8 +116,10 @@ describe('UserStateService', () => {
 
     // ── Persistencia ──
 
-    it('debería persistir estado en localStorage', () => {
+    it('debería persistir estado en localStorage', async () => {
         service.subscribe(mockFund, 75000, 'email', 'test@correo.com');
+        // effect() es asíncrono — esperar a que Angular lo ejecute
+        await TestBed.inject(ApplicationRef).whenStable();
         const stored = localStorage.getItem('btg_fondos_state');
         expect(stored).toBeTruthy();
         const parsed = JSON.parse(stored!);
