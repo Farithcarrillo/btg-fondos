@@ -1,0 +1,11 @@
+<div class="loading" [class]="'loading loading--' + size()" role="status" aria-label="Cargando">
+    <div class="loading__spinner">
+        <svg viewBox="0 0 50 50" class="loading__svg">
+            <circle cx="25" cy="25" r="20" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"
+                class="loading__circle" />
+        </svg>
+    </div>
+    @if (message()) {
+    <p class="loading__message">{{ message() }}</p>
+    }
+</div>

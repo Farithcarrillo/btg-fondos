@@ -1,0 +1,80 @@
+<div class="txn-page">
+    <div class="txn-page__header">
+        <h1 class="txn-page__title">Historial de Transacciones</h1>
+        <p class="txn-page__subtitle">Registro de todas tus suscripciones y cancelaciones</p>
+    </div>
+
+    @if (state.sortedTransactions().length === 0) {
+    <div class="empty-state">
+        <h3 class="empty-state__title">Sin transacciones</h3>
+        <p class="empty-state__text">Cuando realices suscripciones o cancelaciones, aparecerán aquí</p>
+    </div>
+    } @else {
+    <div class="txn-table-wrapper">
+        <table class="txn-table">
+            <thead>
+                <tr>
+                    <th>ID Transacción</th>
+                    <th>Fondo</th>
+                    <th>Tipo</th>
+                    <th>Monto</th>
+                    <th>Notificación</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (txn of state.sortedTransactions(); track txn.id) {
+                <tr>
+                    <td><span class="txn-id">{{ txn.id }}</span></td>
+                    <td><span class="txn-fund">{{ txn.fundName }}</span></td>
+                    <td>
+                        <span class="txn-type" [class]="'txn-type--' + txn.type">
+                            {{ txn.type === 'subscription' ? 'Suscripción' : 'Cancelación' }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="txn-amount" [class]="'txn-amount--' + txn.type">
+                            {{ txn.type === 'subscription' ? '-' : '+' }}{{ txn.amount | copCurrency }}
+                        </span>
+                    </td>
+                    <td>
+                        @if (txn.notificationMethod) {
+                        <div class="txn-notif-group">
+                            <span class="txn-notif">{{ txn.notificationMethod === 'email' ? 'Email' : 'SMS' }}</span>
+                            @if (txn.notificationDestination) {
+                            <span class="txn-notif-dest">{{ txn.notificationDestination }}</span>
+                            }
+                        </div>
+                        } @else {
+                        <span class="txn-notif txn-notif--na">N/A</span>
+                        }
+                    </td>
+                    <td><span class="txn-date">{{ txn.date | date:'dd/MM/yyyy HH:mm:ss' }}</span></td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="txn-cards">
+        @for (txn of state.sortedTransactions(); track txn.id) {
+        <div class="txn-card">
+            <div class="txn-card__header">
+                <span class="txn-type" [class]="'txn-type--' + txn.type">{{ txn.type === 'subscription' ? 'Suscripción'
+                    : 'Cancelación' }}</span>
+                <span class="txn-amount" [class]="'txn-amount--' + txn.type">{{ txn.type === 'subscription' ? '-' : '+'
+                    }}{{ txn.amount | copCurrency }}</span>
+            </div>
+            <h4 class="txn-card__fund">{{ txn.fundName }}</h4>
+            <div class="txn-card__meta">
+                <span>{{ txn.date | date:'dd/MM/yyyy HH:mm' }}</span>
+                @if (txn.notificationMethod) {
+                <span>· {{ txn.notificationMethod === 'email' ? '📧' : '📱' }} {{ txn.notificationDestination }}</span>
+                }
+            </div>
+            <span class="txn-card__id">{{ txn.id }}</span>
+        </div>
+        }
+    </div>
+    }
+</div>

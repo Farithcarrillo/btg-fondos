@@ -1,0 +1,137 @@
+<div class="dashboard">
+    <section class="dashboard__hero">
+        <div class="dashboard__hero-content">
+            <h1 class="dashboard__title">Bienvenido a tus Fondos</h1>
+            <p class="dashboard__subtitle">Gestiona tus inversiones en fondos FPV y FIC de BTG Pactual</p>
+        </div>
+        <div class="dashboard__hero-decoration"></div>
+    </section>
+
+    <section class="dashboard__summary">
+        <div class="summary-card summary-card--balance">
+            <div class="summary-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                </svg>
+            </div>
+            <div class="summary-card__content">
+                <span class="summary-card__label">Saldo disponible</span>
+                <span class="summary-card__value">{{ state.balance() | copCurrency }}</span>
+            </div>
+        </div>
+        <div class="summary-card summary-card--subs">
+            <div class="summary-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <path
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+            </div>
+            <div class="summary-card__content">
+                <span class="summary-card__label">Fondos suscritos</span>
+                <span class="summary-card__value">{{ state.activeCount() }}</span>
+            </div>
+        </div>
+        <div class="summary-card summary-card--invested">
+            <div class="summary-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                </svg>
+            </div>
+            <div class="summary-card__content">
+                <span class="summary-card__label">Total invertido</span>
+                <span class="summary-card__value">{{ state.totalInvested() | copCurrency }}</span>
+            </div>
+        </div>
+        <div class="summary-card summary-card--txns">
+            <div class="summary-card__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+                    <path d="M4 4h16v16H4V4zm4 8h8M8 12l3-3m-3 3l3 3" />
+                </svg>
+            </div>
+            <div class="summary-card__content">
+                <span class="summary-card__label">Transacciones</span>
+                <span class="summary-card__value">{{ state.transactionCount() }}</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="dashboard__grid">
+        <section class="dashboard__section">
+            <div class="section-header">
+                <h2 class="section-header__title">Mis Fondos Activos</h2>
+                <a routerLink="/subscriptions" class="section-header__link">Ver todos →</a>
+            </div>
+            @if (state.subscriptions().length === 0) {
+            <div class="empty-state">
+                <p class="empty-state__text">No tienes fondos activos</p>
+                <a routerLink="/funds" class="btn btn--primary">Explorar fondos</a>
+            </div>
+            } @else {
+            <div class="active-funds">
+                @for (sub of state.subscriptions(); track sub.fundId) {
+                <div class="fund-card">
+                    <div class="fund-card__badge" [class]="'fund-card__badge--' + sub.category.toLowerCase()">{{
+                        sub.category }}</div>
+                    <div class="fund-card__info">
+                        <h4 class="fund-card__name">{{ sub.fundName }}</h4>
+                        <span class="fund-card__date">Desde {{ sub.subscribedAt | date:'dd MMM yyyy' }}</span>
+                    </div>
+                    <div class="fund-card__amount">{{ sub.amount | copCurrency }}</div>
+                </div>
+                }
+            </div>
+            }
+        </section>
+
+        <section class="dashboard__section">
+            <div class="section-header">
+                <h2 class="section-header__title">Últimas Transacciones</h2>
+                <a routerLink="/transactions" class="section-header__link">Ver todas →</a>
+            </div>
+            @if (state.recentTransactions().length === 0) {
+            <div class="empty-state">
+                <p class="empty-state__text">Sin transacciones aún</p>
+            </div>
+            } @else {
+            <div class="txn-list">
+                @for (txn of state.recentTransactions(); track txn.id) {
+                <div class="txn-item">
+                    <div class="txn-item__icon" [class]="'txn-item__icon--' + txn.type">
+                        @if (txn.type === 'subscription') {
+                        <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        } @else {
+                        <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        }
+                    </div>
+                    <div class="txn-item__info">
+                        <span class="txn-item__name">{{ txn.fundName }}</span>
+                        <span class="txn-item__date">{{ txn.date | date:'dd/MM/yyyy HH:mm' }}</span>
+                    </div>
+                    <div class="txn-item__amount" [class]="'txn-item__amount--' + txn.type">
+                        {{ txn.type === 'subscription' ? '-' : '+' }}{{ txn.amount | copCurrency }}
+                    </div>
+                </div>
+                }
+            </div>
+            }
+        </section>
+    </div>
+
+    <section class="dashboard__cta">
+        <div class="cta-card">
+            <div class="cta-card__content">
+                <h3 class="cta-card__title">¿Listo para invertir?</h3>
+                <p class="cta-card__text">Explora nuestros fondos FPV y FIC con montos desde COP $50.000</p>
+            </div>
+            <a routerLink="/funds" class="btn btn--white">Ver fondos disponibles</a>
+        </div>
+    </section>
+</div>

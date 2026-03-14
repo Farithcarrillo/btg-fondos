@@ -1,0 +1,59 @@
+<div class="subs-page">
+    <div class="subs-page__header">
+        <h1 class="subs-page__title">Mis Fondos Activos</h1>
+        <p class="subs-page__subtitle">Administra tus suscripciones a fondos de inversión</p>
+    </div>
+
+    <div class="subs-page__summary">
+        <div class="summary-pill"><span class="summary-pill__label">Fondos activos</span><span
+                class="summary-pill__value">{{ state.activeCount() }}</span></div>
+        <div class="summary-pill"><span class="summary-pill__label">Total invertido</span><span
+                class="summary-pill__value">{{ state.totalInvested() | copCurrency }}</span></div>
+        <div class="summary-pill"><span class="summary-pill__label">Saldo disponible</span><span
+                class="summary-pill__value">{{ state.balance() | copCurrency }}</span></div>
+    </div>
+
+    @if (state.subscriptions().length === 0) {
+    <div class="empty-state">
+        <h3 class="empty-state__title">No tienes fondos activos</h3>
+        <p class="empty-state__text">Explora nuestros fondos disponibles y comienza a invertir</p>
+        <a routerLink="/funds" class="btn btn--primary">Ver fondos disponibles</a>
+    </div>
+    } @else {
+    <div class="subs-grid">
+        @for (sub of state.subscriptions(); track sub.fundId) {
+        <div class="sub-card">
+            <div class="sub-card__top">
+                <span class="sub-card__category" [class]="'sub-card__category--' + sub.category.toLowerCase()">{{
+                    sub.category }}</span>
+            </div>
+            <h3 class="sub-card__name">{{ sub.fundName }}</h3>
+            <div class="sub-card__details">
+                <div class="sub-card__detail">
+                    <span class="sub-card__detail-label">Monto invertido</span>
+                    <span class="sub-card__detail-value sub-card__detail-value--primary">{{ sub.amount | copCurrency
+                        }}</span>
+                </div>
+                <div class="sub-card__detail">
+                    <span class="sub-card__detail-label">Fecha suscripción</span>
+                    <span class="sub-card__detail-value">{{ sub.subscribedAt | date:'dd/MM/yyyy' }}</span>
+                </div>
+                <div class="sub-card__detail">
+                    <span class="sub-card__detail-label">Notificación</span>
+                    <span class="sub-card__detail-value">
+                        {{ sub.notificationMethod === 'email' ? '📧' : '📱' }}
+                        {{ sub.notificationDestination }}
+                    </span>
+                </div>
+            </div>
+            <button class="btn btn--danger-outline btn--full" (click)="openCancelDialog(sub)">Cancelar
+                suscripción</button>
+        </div>
+        }
+    </div>
+    }
+
+    <app-confirm-dialog [isOpen]="showCancelDialog()" title="Cancelar suscripción" [message]="cancelMessage()"
+        confirmText="Sí, cancelar" cancelText="No, mantener" variant="danger" (confirmed)="confirmCancellation()"
+        (cancelled)="showCancelDialog.set(false)" />
+</div>

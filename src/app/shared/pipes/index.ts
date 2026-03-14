@@ -1,0 +1,1 @@
+export { CopCurrencyPipe } from './cop-currency.pipe';

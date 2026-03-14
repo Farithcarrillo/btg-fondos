@@ -1,0 +1,90 @@
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 2rem;
+    color: var(--btg-primary);
+
+    &--sm {
+        padding: 0.5rem;
+
+        .loading__svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .loading__message {
+            font-size: 0.75rem;
+        }
+    }
+
+    &--md {
+        padding: 1.5rem;
+
+        .loading__svg {
+            width: 40px;
+            height: 40px;
+        }
+    }
+
+    &--lg {
+        padding: 3rem;
+
+        .loading__svg {
+            width: 56px;
+            height: 56px;
+        }
+
+        .loading__message {
+            font-size: 1rem;
+        }
+    }
+
+    &__spinner {
+        display: flex;
+    }
+
+    &__svg {
+        width: 40px;
+        height: 40px;
+        animation: rotate 1.4s linear infinite;
+    }
+
+    &__circle {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: 0;
+        animation: dash 1.4s ease-in-out infinite;
+    }
+
+    &__message {
+        margin: 0;
+        font-size: 0.875rem;
+        color: var(--btg-text-secondary);
+        font-weight: 500;
+    }
+}
+
+@keyframes rotate {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes dash {
+    0% {
+        stroke-dasharray: 1, 150;
+        stroke-dashoffset: 0;
+    }
+
+    50% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -35;
+    }
+
+    100% {
+        stroke-dasharray: 90, 150;
+        stroke-dashoffset: -124;
+    }
+}

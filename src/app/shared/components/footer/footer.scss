@@ -1,0 +1,42 @@
+.footer {
+    background: var(--btg-primary-dark);
+    padding: 1.5rem;
+    margin-top: auto;
+
+    &__container {
+        max-width: 1280px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    &__brand {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    &__logo {
+        color: white;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    &__separator {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    &__text {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.8rem;
+    }
+
+    &__copy {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.45);
+        font-size: 0.75rem;
+    }
+}

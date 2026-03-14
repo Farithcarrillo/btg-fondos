@@ -1,59 +1,191 @@
-# BtgFondos
+# BTG Pactual - Gestión de Fondos FPV/FIC
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.2.
+Aplicación web interactiva y responsiva desarrollada con **Angular 21.2** que permite gestionar fondos de inversión (FPV y FIC) de BTG Pactual. Utiliza las últimas características del framework: **Signals**, **resource()**, **linkedSignal()**, **input()/output()**, **Zoneless** y **Vitest**.
 
-## Development server
+---
 
-To start a local development server, run:
+## Funcionalidades
+
+- Visualizar fondos disponibles con filtrado por categoría (FPV / FIC)
+- Suscribirse a fondos validando monto mínimo y saldo disponible
+- Cancelar suscripciones con reembolso automático al saldo
+- Historial completo de transacciones (suscripciones y cancelaciones)
+- Selección de método de notificación (Email o SMS) con destino personalizado
+- **Envío real de emails** vía EmailJS (gratuito, 200/mes)
+- **Envío real de SMS** vía Textbelt (gratuito, 1/día)
+- Persistencia de datos en localStorage (sobrevive recargas de página)
+- Mensajes de error, loading states y feedback visual
+
+---
+
+## Tecnologías y Features de Angular 21
+
+| Feature | Uso en el proyecto |
+|---|---|
+| `signal()` | Estado global en servicios y estado local en componentes |
+| `computed()` | Derivaciones: `totalInvested`, `filteredFunds`, `amountError`, `destinationError` |
+| `resource()` | Carga asíncrona de fondos con loading/error states automáticos |
+| `linkedSignal()` | Reset automático del monto al cambiar fondo seleccionado |
+| `input()` | Inputs como signals en componentes reutilizables |
+| `output()` | Outputs como funciones en `ConfirmDialogComponent` |
+| `effect()` | Persistencia automática del estado en localStorage |
+| `provideZonelessChangeDetection()` | Sin zone.js (Angular 21 default) |
+| Vitest | Test runner por defecto |
+| `@for` / `@if` / `@switch` | Control flow blocks nativos |
+| Lazy loading | Rutas con `loadComponent()` |
+| Standalone | 100% standalone, sin NgModules |
+
+---
+
+## Requisitos
+
+- **Node.js** >= 22.16.0
+- **Angular CLI** 21.2.2
+
+---
+
+## Instalación y Ejecución
 
 ```bash
+# 1. Clonar el repositorio
+git clone https://github.com/Farithcarrillo/btg-fondos.git
+cd btg-fondos
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Ejecutar la aplicación
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Abrir en el navegador: **http://localhost:4200**
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Configuración de Notificaciones
 
-```bash
-ng generate component component-name
-```
+La aplicación envía notificaciones reales al suscribirse a un fondo. El usuario elige el método (Email o SMS) e ingresa el destino (correo o número de celular).
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+### Email — EmailJS (gratuito, 200 emails/mes)
 
-```bash
-ng generate --help
-```
+EmailJS permite enviar emails directamente desde el frontend sin necesidad de backend.
 
-## Building
+> **Nota:** Sin configurar EmailJS la aplicación funciona normalmente. Los emails se "simulan" mostrando una alerta informativa con los datos que se enviarían.
 
-To build the project run:
+---
 
-```bash
-ng build
-```
+### SMS — Textbelt (gratuito, 1 SMS por día)
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Textbelt es una API pública que permite enviar SMS desde el navegador sin necesidad de backend ni registro.
 
-## Running unit tests
+**No requiere configuración.** La key gratuita `textbelt` ya viene configurada en el servicio y permite enviar **1 SMS real por día** sin crear cuenta.
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+**Funcionamiento:**
+- El usuario ingresa su número de celular en el formulario de suscripción
+- La aplicación formatea el número automáticamente al formato internacional E.164
+- Se envía un SMS real al número con los detalles de la suscripción
+
+**Formato de números soportado (Colombia):**
+
+| El usuario escribe | Se envía como |
+|---|---|
+| `3001234567` | `+573001234567` |
+| `573001234567` | `+573001234567` |
+| `+573001234567` | `+573001234567` |
+
+**Limitaciones del plan gratuito:**
+- 1 SMS por día (por IP)
+- Si se agota la cuota, la app muestra un aviso amigable indicando que la suscripción fue exitosa pero el SMS se enviará después
+- Para más SMS se puede comprar una API key [https://textbelt.com/](https://textbelt.com/) ($0.05/SMS)
+
+> **Nota:** La suscripción al fondo siempre se procesa correctamente, independientemente de si el SMS se envió o no. Las notificaciones son informativas.
+
+---
+
+## Tests (Vitest)
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
+Incluye tests para:
+- `UserStateService` — suscripciones, cancelaciones, validaciones, persistencia, computed signals
+- `AlertService` — creación, descarte y limpieza de alertas
+- `CopCurrencyPipe` — formateo de moneda COP
 
-For end-to-end (e2e) testing, run:
+---
 
-```bash
-ng e2e
+## Arquitectura SOLID
+
+```
+src/app/
+├── core/                          # Lógica de negocio (singleton services)
+│   ├── models/
+│   │   ├── fund.model.ts          # Interfaces y tipos
+│   │   └── index.ts
+│   └── services/
+│       ├── fund.service.ts        # Datos de fondos (mock)
+│       ├── user-state.service.ts  # Estado global con signals + localStorage
+│       ├── alert.service.ts       # Alertas globales
+│       ├── notification.service.ts # EmailJS + Textbelt
+│       └── index.ts
+├── shared/                        # Componentes reutilizables
+│   ├── components/
+│   │   ├── header/                # Navegación + saldo
+│   │   ├── footer/
+│   │   ├── alert/                 # Alertas flotantes
+│   │   ├── loading-spinner/       # Spinner con input() signal
+│   │   └── confirm-dialog/        # Diálogo con input()/output()
+│   └── pipes/
+│       └── cop-currency.pipe.ts   # Formato COP
+├── features/                      # Páginas lazy-loaded
+│   ├── dashboard/                 # Resumen con computed signals
+│   ├── funds/                     # resource(), linkedSignal(), computed()
+│   ├── subscriptions/             # Cancelación con confirm dialog
+│   └── transactions/              # Historial con sortedTransactions
+├── app.component.ts               # Layout principal
+├── app.config.ts                  # Zoneless + Router
+└── app.routes.ts                  # Lazy loading routes
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### Principios aplicados:
 
-## Additional Resources
+- **SRP:** Cada servicio una responsabilidad (`FundService` datos, `UserStateService` estado, `AlertService` alertas, `NotificationService` envíos)
+- **OCP:** Los servicios usan datos mock pero pueden migrar a API real sin cambiar componentes
+- **ISP:** Interfaces segregadas (`Fund`, `Transaction`, `FundSubscription`, `SubscriptionRequest`)
+- **DIP:** Componentes dependen de servicios inyectados vía `inject()`
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+
+## Fondos Disponibles
+
+| ID | Nombre | Monto Mínimo | Categoría |
+|---|---|---|---|
+| 1 | FPV_BTG_PACTUAL_RECAUDADORA | COP $75.000 | FPV |
+| 2 | FPV_BTG_PACTUAL_ECOPETROL | COP $125.000 | FPV |
+| 3 | DEUDAPRIVADA | COP $50.000 | FIC |
+| 4 | FDO-ACCIONES | COP $250.000 | FIC |
+| 5 | FPV_BTG_PACTUAL_DINAMICA | COP $100.000 | FPV |
+
+**Saldo inicial del usuario:** COP $500.000
+
+---
+
+## Diseño UI/UX
+
+- Paleta basada en branding BTG Pactual: `#003087` (primary), `#0066CC` (secondary), `#00A3E0` (accent)
+- 100% responsivo (mobile / tablet / desktop)
+- Alertas animadas con auto-dismiss
+- Diálogos de confirmación para acciones destructivas
+- Loading states con spinners SVG
+- Persistencia en localStorage (sobrevive recargas)
+- Accesibilidad: aria-labels, roles, focus-visible
+
+---
+
+## Consideraciones
+
+- No se implementa lógica de backend ni autenticación
+- Se asume un usuario único con saldo inicial de COP $500.000
+- Los datos persisten en `localStorage` del navegador
+- Para resetear los datos: DevTools → Application → Local Storage → eliminar `btg_fondos_state`

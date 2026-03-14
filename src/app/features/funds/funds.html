@@ -1,0 +1,194 @@
+<div class="funds-page">
+    <div class="funds-page__header">
+        <h1 class="funds-page__title">Fondos Disponibles</h1>
+        <p class="funds-page__subtitle">Explora y suscríbete a nuestros fondos de inversión</p>
+    </div>
+
+    <div class="funds-page__filters">
+        <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'ALL'"
+            (click)="activeFilter.set('ALL')">Todos</button>
+        <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'FPV'"
+            (click)="activeFilter.set('FPV')">
+            <span class="filter-btn__badge filter-btn__badge--fpv">FPV</span> Pensiones Voluntarias
+        </button>
+        <button class="filter-btn" [class.filter-btn--active]="activeFilter() === 'FIC'"
+            (click)="activeFilter.set('FIC')">
+            <span class="filter-btn__badge filter-btn__badge--fic">FIC</span> Inversión Colectiva
+        </button>
+    </div>
+
+    @if (fundsResource.isLoading()) {
+    <app-loading-spinner message="Cargando fondos..." size="lg" />
+    }
+
+    @if (!fundsResource.isLoading() && fundsResource.hasValue()) {
+    <div class="funds-grid">
+        @for (fund of filteredFunds(); track fund.id) {
+        <div class="fund-card" [class.fund-card--subscribed]="userState.isSubscribed(fund.id)">
+            <div class="fund-card__header">
+                <span class="fund-card__category" [class]="'fund-card__category--' + fund.category.toLowerCase()">{{
+                    fund.category }}</span>
+                @if (userState.isSubscribed(fund.id)) {
+                <span class="fund-card__status">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                            clip-rule="evenodd" />
+                    </svg>
+                    Suscrito
+                </span>
+                }
+            </div>
+            <h3 class="fund-card__name">{{ fund.name }}</h3>
+            <div class="fund-card__details">
+                <div class="fund-card__detail">
+                    <span class="fund-card__detail-label">Monto mínimo</span>
+                    <span class="fund-card__detail-value">{{ fund.minimumAmount | copCurrency }}</span>
+                </div>
+                <div class="fund-card__detail">
+                    <span class="fund-card__detail-label">Categoría</span>
+                    <span class="fund-card__detail-value">{{ fund.category === 'FPV' ? 'Pensiones Voluntarias' :
+                        'Inversión Colectiva' }}</span>
+                </div>
+            </div>
+            <button class="btn btn--primary btn--full" [disabled]="userState.isSubscribed(fund.id)"
+                (click)="openModal(fund)">
+                {{ userState.isSubscribed(fund.id) ? 'Ya estás suscrito' : 'Suscribirse' }}
+            </button>
+        </div>
+        }
+    </div>
+
+    @if (filteredFunds().length === 0) {
+    <div class="empty-state">
+        <p>No se encontraron fondos para esta categoría.</p>
+    </div>
+    }
+    }
+
+    @if (fundsResource.error()) {
+    <div class="empty-state">
+        <p>Error al cargar los fondos. Intenta de nuevo.</p>
+    </div>
+    }
+
+    @if (showModal() && selectedFund()) {
+    <div class="modal-overlay" (click)="closeModal()">
+        <div class="modal" (click)="$event.stopPropagation()">
+            <div class="modal__header">
+                <h2 class="modal__title">Suscribirse a Fondo</h2>
+                <button class="modal__close" (click)="closeModal()" aria-label="Cerrar">
+                    <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                        <path fill-rule="evenodd"
+                            d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal__fund-info">
+                <span class="fund-card__category"
+                    [class]="'fund-card__category--' + selectedFund()!.category.toLowerCase()">{{
+                    selectedFund()!.category }}</span>
+                <h3 class="modal__fund-name">{{ selectedFund()!.name }}</h3>
+                <p class="modal__fund-min">Monto mínimo: <strong>{{ selectedFund()!.minimumAmount | copCurrency
+                        }}</strong></p>
+            </div>
+
+            <div class="modal__form">
+                <div class="form-group">
+                    <label class="form-label" for="amount">Monto a invertir (COP)</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">$</span>
+                        <input id="amount" type="number" class="form-input" [(ngModel)]="formAmount"
+                            [min]="selectedFund()!.minimumAmount" placeholder="Ingresa el monto" />
+                    </div>
+                    @if (amountError()) {
+                    <div class="form-error">{{ amountError() }}</div>
+                    }
+                    <span class="form-hint">Saldo disponible: <strong>{{ userState.balance() | copCurrency
+                            }}</strong></span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Método de notificación</label>
+                    <div class="radio-group">
+                        <label class="radio-option" [class.radio-option--selected]="formNotification() === 'email'">
+                            <input type="radio" name="notification" value="email"
+                                [checked]="formNotification() === 'email'"
+                                (change)="onNotificationMethodChange('email')" />
+                            <div class="radio-option__icon">
+                                <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                </svg>
+                            </div>
+                            <div class="radio-option__content">
+                                <span class="radio-option__label">Email</span>
+                                <span class="radio-option__desc">Notificación por correo electrónico</span>
+                            </div>
+                            <div class="radio-option__check"></div>
+                        </label>
+                        <label class="radio-option" [class.radio-option--selected]="formNotification() === 'sms'">
+                            <input type="radio" name="notification" value="sms" [checked]="formNotification() === 'sms'"
+                                (change)="onNotificationMethodChange('sms')" />
+                            <div class="radio-option__icon">
+                                <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                                    <path fill-rule="evenodd"
+                                        d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="radio-option__content">
+                                <span class="radio-option__label">SMS</span>
+                                <span class="radio-option__desc">Notificación por mensaje de texto</span>
+                            </div>
+                            <div class="radio-option__check"></div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="destination">{{ destinationLabel() }}</label>
+                    <div class="input-wrapper">
+                        <span class="input-prefix">
+                            @if (formNotification() === 'email') {
+                            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                            </svg>
+                            } @else {
+                            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16">
+                                <path fill-rule="evenodd"
+                                    d="M7 2a2 2 0 00-2 2v12a2 2 0 002 2h6a2 2 0 002-2V4a2 2 0 00-2-2H7zm3 14a1 1 0 100-2 1 1 0 000 2z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            }
+                        </span>
+                        <input id="destination" [type]="formNotification() === 'email' ? 'email' : 'tel'"
+                            class="form-input form-input--icon" [(ngModel)]="formDestination"
+                            [placeholder]="destinationPlaceholder()" />
+                    </div>
+                    @if (formDestination() && destinationError()) {
+                    <div class="form-error">{{ destinationError() }}</div>
+                    }
+                    @if (!formDestination()) {
+                    <span class="form-hint">
+                        {{ formNotification() === 'email' ? 'Recibirás la confirmación en este correo' : 'Recibirás la
+                        confirmación en este número' }}
+                    </span>
+                    }
+                </div>
+
+                <div class="modal__actions">
+                    <button class="btn btn--outline" (click)="closeModal()">Cancelar</button>
+                    <button class="btn btn--primary" (click)="submitSubscription()"
+                        [disabled]="!isFormValid() || isSubmitting()">
+                        {{ isSubmitting() ? 'Procesando...' : 'Confirmar suscripción' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</div>

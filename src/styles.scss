@@ -1,1 +1,89 @@
-/* You can add global styles to this file, and also import other style files */
+/**
+ * BTG Pactual - Design System
+ * Paleta basada en branding BTG/PersonalSoft
+ */
+:root {
+    --btg-primary-dark: #001d4a;
+    --btg-primary: #003087;
+    --btg-primary-light: #1a5cb5;
+    --btg-secondary: #0066cc;
+    --btg-accent: #00a3e0;
+    --btg-text-primary: #0f172a;
+    --btg-text-secondary: #475569;
+    --btg-text-tertiary: #94a3b8;
+    --btg-bg: #f1f5f9;
+    --btg-bg-light: #f8fafc;
+    --btg-border: #e2e8f0;
+    --btg-border-light: #f1f5f9;
+}
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-font-smoothing: antialiased;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: SF Pro Display, SF Pro Icons, Helvetica Neue, Helvetica, Arial, sans-serif;
+    color: var(--btg-text-primary);
+    background: var(--btg-bg);
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+a {
+    color: var(--btg-primary);
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover {
+        color: var(--btg-primary-dark);
+    }
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+
+    &:hover {
+        background: #94a3b8;
+    }
+}
+
+::selection {
+    background: rgba(0, 48, 135, 0.15);
+    color: var(--btg-primary-dark);
+}
+
+:focus-visible {
+    outline: 2px solid var(--btg-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

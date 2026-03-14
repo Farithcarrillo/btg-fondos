@@ -1,0 +1,129 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+    padding: 1rem;
+    animation: fadeIn 0.15s ease;
+}
+
+.dialog {
+    background: white;
+    border-radius: 16px;
+    padding: 1.75rem;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    animation: scaleIn 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    &__icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        &--danger {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        &--primary {
+            background: var(--btg-bg-light);
+            color: var(--btg-primary);
+        }
+    }
+
+    &__title {
+        margin: 0;
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--btg-text-primary);
+    }
+
+    &__message {
+        margin: 0 0 1.5rem;
+        font-size: 0.9rem;
+        color: var(--btg-text-secondary);
+        line-height: 1.6;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+    }
+}
+
+.btn {
+    padding: 0.625rem 1.25rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &--outline {
+        background: transparent;
+        border: 1.5px solid var(--btg-border);
+        color: var(--btg-text-secondary);
+
+        &:hover {
+            background: var(--btg-bg-light);
+        }
+    }
+
+    &--danger {
+        background: #dc2626;
+        color: white;
+
+        &:hover {
+            background: #b91c1c;
+        }
+    }
+
+    &--primary {
+        background: var(--btg-primary);
+        color: white;
+
+        &:hover {
+            background: var(--btg-primary-dark);
+        }
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
