@@ -197,21 +197,21 @@ src/app/
 ### Dashboard — Estado inicial
 Vista principal, resumen de inversiones y acceso rápido a fondos y transacciones.
 
-![Dashboard inicial](screenshots/01.png)
+![Dashboard inicial](screenshots/1.png)
 
 ### Fondos Disponibles
 Listado de los 5 fondos FPV y FIC con filtrado por categoría, monto mínimo y botón de suscripción.
 
-![Fondos disponibles](screenshots/02.png)
+![Fondos disponibles](screenshots/2.png)
 
 ### Mis Fondos Activos — Sin suscripciones
 Resumen de inversión y acceso directo para explorar fondos.
 
-![Mis fondos vacío](screenshots/04.png)
+![Mis fondos vacío](screenshots/4.png)
 
 ### Historial de Transacciones
 Tabla con ID de transacción, fondo, tipo, monto, método de notificación (con destino) y fecha.
 
-![Historial de transacciones](screenshots/05.png)
+![Historial de transacciones](screenshots/5.png)
 
 ---
